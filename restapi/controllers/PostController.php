@@ -8,6 +8,7 @@ use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
 
 use restapi\models\Post;
+use restapi\models\PostForm;
 
 class PostController extends ActiveController
 {
@@ -21,10 +22,7 @@ class PostController extends ActiveController
             'class' => VerbFilter::className(),
                 'actions' => [
                     'index'  => ['GET'],
-                    'view'   => ['GET'],
-                    'create' => ['GET', 'POST'],
-                    'update' => ['GET', 'PUT', 'POST'],
-                    'delete' => ['POST', 'DELETE'],
+                    'create' => ['POST'],
                 ],
         ];
         return $behaviors;
@@ -36,7 +34,7 @@ class PostController extends ActiveController
     {
         $actions = parent::actions();
 
-        unset($actions['index'], $actions['view'], $actions['delete'], $actions['update'], $actions['options']);
+        unset($actions['index'], $actions['view'], $actions['create'], $actions['delete'], $actions['update'], $actions['options']);
 
         return $actions;
     }
@@ -49,5 +47,16 @@ class PostController extends ActiveController
         ]);
 
         return $dataProvider;
+    }
+
+    public function actionCreate()
+    {
+        $model = new PostForm();
+
+        if ($model->load(\Yii::$app->request->post(), '') && ($token = $model->savePost())) {
+            return ['result' => 'Пост успешно сохранен.'];
+        } else {
+            return $model;
+        }
     }
 }
