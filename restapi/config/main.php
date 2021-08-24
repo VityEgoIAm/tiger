@@ -40,6 +40,7 @@ return [
             'showScriptName' => false,
             'rules' => [
                 'auth' => 'site/login',
+                'signup' => 'site/signup',
                 [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => [
