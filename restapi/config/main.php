@@ -41,6 +41,7 @@ return [
             'rules' => [
                 'auth' => 'site/login',
                 'signup' => 'site/signup',
+                'my-posts' => 'my-post/index',
                 [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => [
