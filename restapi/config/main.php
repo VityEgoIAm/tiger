@@ -7,22 +7,23 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-frontend',
+    'id' => 'app-restapi',
     'basePath' => dirname(__DIR__),
+    'controllerNamespace' => 'restapi\controllers',
     'bootstrap' => ['log'],
-    'controllerNamespace' => 'frontend\controllers',
+    'modules' => [],
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-frontend',
+            'csrfParam' => '_csrf-restapi',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'restapi\models\User',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
-        ],
-        'session' => [
-            // this is the name of the session cookie used for login on the frontend
-            'name' => 'advanced-frontend',
+            'enableSession' => false,
+            'identityCookie' => ['name' => '_identity-restapi', 'httpOnly' => true],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -33,15 +34,20 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                'auth' => 'site/login',
+                [
+                    'class' => 'yii\rest\UrlRule', 
+                    'controller' => [
+                        'post'
+                    ]
+                ],
             ],
-        ],
+        ]
     ],
     'params' => $params,
 ];
