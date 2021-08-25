@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use common\models\User;
 use backend\models\UserSearch;
+use backend\models\SignupForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -76,14 +77,10 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        $model = new User();
+        $model = new SignupForm();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
-            $model->loadDefaultValues();
+        if ($model->load(\Yii::$app->request->post()) && $model->signup()) {
+            return $this->redirect(['index']);
         }
 
         return $this->render('create', [
@@ -100,14 +97,25 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $user = $this->findModel($id);
+        
+        $model = new SignupForm();
+        $model->username = $user->username;
+        $model->email = $user->email;
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(\Yii::$app->request->post()) && $model->validate()) {
+            $user->username = $model->username;
+            $user->email = $model->email;
+            $user->setPassword($model->password);
+
+            if($user->save()) {
+                return $this->redirect(['view', 'id' => $user->id]);
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'user' => $user,
         ]);
     }
 
